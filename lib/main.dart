@@ -40,7 +40,7 @@ class _MapPageState extends State<MapPage> {
       body: MaplibreMap(
         // styleString:'http://localhost:8000/styles/light.json?key=de261c3add45ec4b&mobile=true',
         styleString:
-            'http://10.0.2.2:8000/styles/light.json?key=de261c3add45ec4b&mobile=true',
+            'http://192.168.1.85:8000/styles/light.json?key=de261c3add45ec4b&mobile=true',
         initialCameraPosition: const CameraPosition(
           target: LatLng(45.5231, -122.6765),
           zoom: 12,
@@ -50,7 +50,7 @@ class _MapPageState extends State<MapPage> {
           debugPrint("Map is ready.");
           //load the routes onto the map
           // final geoJsonUrl = 'http://localhost:8000/geojson/routes.json';
-          final routeUrl = 'http://10.0.2.2:8000/geojson/routes.json';
+          final routeUrl = 'http://192.168.1.85:8000/geojson/routes.json';
           final routeResponse = await http.get(Uri.parse(routeUrl));
 
           if (routeResponse.statusCode == 200) {
@@ -75,7 +75,7 @@ class _MapPageState extends State<MapPage> {
             debugPrint("Failed to load GeoJSON: ${routeResponse.statusCode}");
           }
           //load the start markers
-          final startMarkerUrl ='http://10.0.2.2:8000/geojson/start-markers.json';
+          final startMarkerUrl ='http://192.168.1.85:8000/geojson/start-markers.json';
           final startMarkerResponse = await http.get(Uri.parse(startMarkerUrl));
 
           if (startMarkerResponse.statusCode == 200) {
@@ -83,25 +83,35 @@ class _MapPageState extends State<MapPage> {
 
             for (final feature in rawGeoJson['features']) {
               final coords = feature['geometry']['coordinates'];
+
               if (coords is List && coords.length > 2) {
-                feature['geometry']['coordinates'] = [coords[0], coords[1]]; // drop Z and T
+                final lon = coords[0];
+                final lat = coords[1];
+                debugPrint("Original coordinates: $coords");
+                debugPrint("Adjusted marker: lon=$lon, lat=$lat");
+
+                feature['geometry']['coordinates'] = [lon, lat];
               }
             }
 
-            final startMarkerGeoJson = rawGeoJson;
+
+            //final startMarkerGeoJson = rawGeoJson;
 
             await _controller.addSource(
               "start-markers",
-              GeojsonSourceProperties(data: startMarkerGeoJson),
+              GeojsonSourceProperties(data: rawGeoJson),
             );
 
             await _controller.addLayer(
               "start-markers",
               "start-markers-layer",
+            
               const CircleLayerProperties(
-                circleColor: Colors.red,
+                circleColor: '#FF0000',
                 circleRadius: 6,
                 circleOpacity: 0.8,
+                circleStrokeWidth: 1,
+                circleStrokeColor: '#000000',
               ),
             );
           } else {
