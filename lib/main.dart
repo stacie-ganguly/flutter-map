@@ -31,7 +31,7 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
-  MaplibreMapController? _controller;
+  MapLibreMapController? _controller;
   Map<String, dynamic>? _selectedFeature;
   Map<String, dynamic>? _routesGeoJson;
 
@@ -56,7 +56,7 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
-  Future<void> _onMapCreated(MaplibreMapController controller) async {
+  Future<void> _onMapCreated(MapLibreMapController controller) async {
     _controller = controller;
 
     final routeUrl = '$baseUrl:8000/geojson/routes.json';
