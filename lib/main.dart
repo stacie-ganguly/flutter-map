@@ -3,6 +3,8 @@ import 'package:maplibre_gl/maplibre_gl.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+const baseUrl = 'http://192.168.0.135:8000';
+
 void main() {
   runApp(MyApp());
 }
@@ -28,7 +30,7 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
-  late final MaplibreMapController _controller;
+  late final MapLibreMapController _controller;
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +39,10 @@ class _MapPageState extends State<MapPage> {
         title: const Text('Flutter Map'),
         backgroundColor: Color.fromARGB(255, 142, 255, 119),
       ),
-      body: MaplibreMap(
-        // styleString:'http://localhost:8000/styles/light.json?key=de261c3add45ec4b&mobile=true',
+      body: MapLibreMap(
+        rotateGesturesEnabled: true,
         styleString:
-            'http://192.168.1.85:8000/styles/light.json?key=de261c3add45ec4b&mobile=true',
+            '$baseUrl/styles/light.json?key=de261c3add45ec4b&mobile=true',
         initialCameraPosition: const CameraPosition(
           target: LatLng(45.5231, -122.6765),
           zoom: 12,
@@ -49,8 +51,7 @@ class _MapPageState extends State<MapPage> {
           _controller = controller;
           debugPrint("Map is ready.");
           //load the routes onto the map
-          // final geoJsonUrl = 'http://localhost:8000/geojson/routes.json';
-          final routeUrl = 'http://192.168.1.85:8000/geojson/routes.json';
+          final routeUrl = '$baseUrl/geojson/routes.json';
           final routeResponse = await http.get(Uri.parse(routeUrl));
 
           if (routeResponse.statusCode == 200) {
@@ -75,7 +76,7 @@ class _MapPageState extends State<MapPage> {
             debugPrint("Failed to load GeoJSON: ${routeResponse.statusCode}");
           }
           //load the start markers
-          final startMarkerUrl ='http://192.168.1.85:8000/geojson/start-markers.json';
+          final startMarkerUrl = '$baseUrl/geojson/start-markers.json';
           final startMarkerResponse = await http.get(Uri.parse(startMarkerUrl));
 
           if (startMarkerResponse.statusCode == 200) {
@@ -94,7 +95,6 @@ class _MapPageState extends State<MapPage> {
               }
             }
 
-
             //final startMarkerGeoJson = rawGeoJson;
 
             await _controller.addSource(
@@ -105,9 +105,9 @@ class _MapPageState extends State<MapPage> {
             await _controller.addLayer(
               "start-markers",
               "start-markers-layer",
-            
+
               const CircleLayerProperties(
-                circleColor: '#FF0000',
+                circleColor: '#00FF00',
                 circleRadius: 6,
                 circleOpacity: 0.8,
                 circleStrokeWidth: 1,
